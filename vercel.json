@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/chat/:path*",
+      "destination": "https://chat.ecnu.edu.cn/open/api/v1/:path*"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+/* ===== 毛玻璃组件样式 ===== */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--glass-shadow);
+}
+
+/* 夸夸气泡 */
+.praise-bubble {
+  position: relative;
+  max-width: 340px;
+  padding: 16px 22px;
+  background: var(--praise-bg);
+  border: 1px solid var(--praise-border);
+  border-radius: 20px;
+  font-family: var(--font-cute);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+  opacity: 0;
+  transform: scale(0.6) translateY(20px);
+}
+
+/* 气泡小尾巴 */
+.praise-bubble::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 10px 12px 10px;
+  border-style: solid;
+  border-color: transparent transparent var(--praise-bg) transparent;
+}
+
+/* 气泡类型变体 */
+.praise-bubble.warmth {
+  --praise-bg: rgba(255, 180, 100, 0.18);
+  --praise-border: rgba(255, 180, 100, 0.35);
+}
+
+.praise-bubble.gentle {
+  --praise-bg: rgba(255, 200, 220, 0.2);
+  --praise-border: rgba(255, 200, 220, 0.4);
+}
+
+.praise-bubble.funny {
+  --praise-bg: rgba(180, 230, 255, 0.18);
+  --praise-border: rgba(180, 230, 255, 0.35);
+}
+
+.praise-bubble.yaha {
+  --praise-bg: rgba(255, 215, 0, 0.2);
+  --praise-border: rgba(255, 200, 50, 0.4);
+}

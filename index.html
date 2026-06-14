@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>乌萨奇赛博狡兔窟：夸夸避难所</title>
+  <link rel="icon" href="/assets/usagi/shime1.png" type="image/png" />
+  <link rel="stylesheet" href="/src/styles/variables.css" />
+  <link rel="stylesheet" href="/src/styles/base.css" />
+  <link rel="stylesheet" href="/src/styles/glassmorphism.css" />
+  <link rel="stylesheet" href="/src/styles/animations.css" />
+</head>
+<body>
+  <!-- 背景图片层 -->
+  <div class="bg-layer"></div>
+  <!-- 半透明蒙版（70%不透明度 = 图像约30%可见） -->
+  <div class="bg-mask"></div>
+
+  <!-- Canvas 粒子背景层 -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- 能量波特效容器 -->
+  <div id="energy-wave-container"></div>
+
+  <!-- 左右墙壁装饰条 -->
+  <div class="wall-edge wall-edge-left"></div>
+  <div class="wall-edge wall-edge-right"></div>
+
+  <!-- 侧边栏：聊天历史记录 -->
+  <div id="history-sidebar" class="history-sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">📜 历史记录</span>
+      <button id="sidebar-close" class="sidebar-close">✕</button>
+    </div>
+    <div id="history-list" class="history-list">
+      <div class="history-empty">还没有记录哦～<br>写下烦恼让乌萨奇吃掉吧！🐰</div>
+    </div>
+    <div class="sidebar-footer">
+      <button id="clear-history" class="clear-history-btn">🗑️ 清空记录</button>
+    </div>
+  </div>
+  <!-- 侧边栏切换按钮 -->
+  <button id="sidebar-toggle" class="sidebar-toggle">📜<span class="sidebar-toggle-text">聊天记录</span></button>
+
+  <!-- 主内容区 -->
+  <main id="app">
+    <!-- 标题栏（无背景卡片） -->
+    <header class="header-bar">
+      <h1 class="title"><span class="title-en">Usagi's Cyber Burrow</span><span class="title-cn">乌萨奇的夸夸岛</span></h1>
+    </header>
+
+    <!-- 乌萨奇角色区域 -->
+    <section id="usagi-stage">
+      <div id="usagi-character">
+        <div class="usagi-sprite-wrapper">
+          <img id="usagi-sprite" src="" alt="乌萨奇" draggable="false" />
+        </div>
+      </div>
+      <!-- 夸夸气泡（动态插入） -->
+      <div id="praise-container"></div>
+    </section>
+
+    <!-- 飞行文字元素（动态创建） -->
+    <div id="flying-text-layer"></div>
+  </main>
+
+  <!-- 烦恼输入区 — 固定在底部，折叠/展开 -->
+  <div id="shredder-dock" class="shredder-dock">
+    <!-- 折叠状态的触发条 -->
+    <div id="shredder-trigger" class="shredder-trigger">
+      <span class="shredder-trigger-icon">📝</span>
+      <span class="shredder-trigger-text">写下烦恼，让乌萨奇吃掉...</span>
+      <span class="shredder-trigger-arrow">▲</span>
+    </div>
+    <!-- 展开后的输入区域 -->
+    <div id="shredder-panel" class="shredder-panel">
+      <div class="shredder-input-wrapper">
+        <textarea
+          id="worry-input"
+          placeholder="写下今天不开心的事，让乌萨奇帮你吃掉... 🌸"
+          rows="3"
+          maxlength="200"
+        ></textarea>
+        <span class="char-count"><span id="char-count-num">0</span>/200</span>
+      </div>
+      <button id="shred-btn" class="shred-button" disabled>
+        🔥 粉碎它！
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

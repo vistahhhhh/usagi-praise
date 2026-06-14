@@ -1,0 +1,60 @@
+/* ===== CSS 变量 — 阳光生命力配色 ===== */
+
+/* 自定义字体 */
+@font-face {
+  font-family: 'HouskyDemo';
+  src: url('/fonts/HouskyDemo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BailuQiaoli';
+  src: url('/fonts/BailuQiaoli.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* 主色调 */
+  --color-bg-start: #FFF5E6;
+  --color-bg-end: #FFE4EC;
+  --color-accent: #FF9F43;
+  --color-accent-hover: #FFB066;
+  --color-sky: #6DD5FA;
+  --color-gold: #FFD700;
+  --color-pink-soft: #FFE0E9;
+  --color-cream: #FFF8F0;
+
+  /* 文字 */
+  --color-text-primary: #5D4E37;
+  --color-text-secondary: #8B7355;
+  --color-text-light: #B8A089;
+
+  /* 毛玻璃 */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 8px 32px rgba(255, 159, 67, 0.15);
+  --glass-blur: 16px;
+
+  /* 夸夸气泡 */
+  --praise-bg: rgba(255, 215, 0, 0.18);
+  --praise-border: rgba(255, 215, 0, 0.35);
+
+  /* 尺寸 */
+  --usagi-size: 140px;
+  --card-radius: 20px;
+  --header-radius: 16px;
+
+  /* 字体 */
+  --font-main: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-cute: 'Noto Sans SC', 'Comic Sans MS', cursive, sans-serif;
+  --font-title-en: 'HouskyDemo', cursive, sans-serif;
+  --font-title-cn: 'BailuQiaoli', 'Noto Sans SC', cursive, sans-serif;
+
+  /* 过渡 */
+  --transition-fast: 0.2s ease;
+  --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

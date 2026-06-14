@@ -1,0 +1,540 @@
+/* ===== 基础样式重置与全局布局 ===== */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--color-text-primary);
+  background: #FFF8E7;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 背景图片层 */
+.bg-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url('/assets/bg-pattern.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 半透明蒙版（图像约30%可见） */
+.bg-mask {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #FFF8E7;
+  opacity: 0.70;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Canvas 背景层 */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 能量波容器 */
+#energy-wave-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 主内容区 */
+#app {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+  gap: 20px;
+}
+
+/* 标题栏 — 无背景卡片 */
+.header-bar {
+  text-align: center;
+  padding: 16px 28px;
+  margin-top: 8px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.3;
+}
+
+.title-en {
+  font-family: var(--font-title-en);
+  font-size: 5.6rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  letter-spacing: 4px;
+}
+
+.title-cn {
+  font-family: var(--font-title-cn);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 3px;
+}
+
+/* 乌萨奇舞台 — 全屏走动区域（z-index 高于底部 dock，确保乌萨奇始终在最上层） */
+#usagi-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 25;
+  pointer-events: none;
+}
+
+#usagi-character {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* 注意：不设 transition: transform！会与 GSAP scale动画 / scaleX翻转 冲突
+     导致：①翻转脸方向时被过渡动画吃掉 ②HA!点击后scale放大卡住回不来 */
+  pointer-events: auto;
+  /* 初始位置由 JS _setInitialPosition() 控制 */
+}
+
+/* 点击反馈：不用transform（和GSAP冲突），改用filter微缩 */
+#usagi-character:active {
+  filter: brightness(0.92);
+}
+
+#usagi-sprite {
+  width: var(--usagi-size);
+  height: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 12px rgba(255, 159, 67, 0.25));
+  pointer-events: none;
+}
+
+/* 走路摇摆动画的包装层 */
+.usagi-sprite-wrapper {
+  display: inline-block;
+}
+
+/* 夸夸气泡容器 — 跟随乌萨奇位置 */
+#praise-container {
+  position: absolute;
+  width: 340px;
+  min-height: 60px;
+  z-index: 12;
+}
+
+/* 飞行文字层 */
+#flying-text-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* ===== 左右墙壁装饰条 ===== */
+.wall-edge {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 26px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.wall-edge-left {
+  left: 0;
+  background: linear-gradient(to right,
+    rgba(139, 115, 85, 0.35) 0%,
+    rgba(139, 115, 85, 0.18) 40%,
+    rgba(139, 115, 85, 0.06) 70%,
+    transparent 100%
+  );
+  border-right: 2px solid rgba(139, 115, 85, 0.15);
+}
+
+.wall-edge-right {
+  right: 0;
+  background: linear-gradient(to left,
+    rgba(139, 115, 85, 0.35) 0%,
+    rgba(139, 115, 85, 0.18) 40%,
+    rgba(139, 115, 85, 0.06) 70%,
+    transparent 100%
+  );
+  border-left: 2px solid rgba(139, 115, 85, 0.15);
+}
+
+/* ===== 侧边栏：聊天历史记录 ===== */
+
+.history-sidebar {
+  position: fixed;
+  top: 0;
+  right: -340px;
+  width: 340px;
+  height: 100vh;
+  background: rgba(255, 248, 231, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(139, 115, 85, 0.2);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+}
+
+.history-sidebar.open {
+  right: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.15);
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-family: var(--font-title-cn);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sidebar-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.sidebar-close:hover {
+  background: rgba(139, 115, 85, 0.12);
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  padding: 40px 16px;
+}
+
+.history-item {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 14px;
+  border: 1px solid rgba(139, 115, 85, 0.1);
+  animation: historySlideIn 0.3s ease-out;
+}
+
+@keyframes historySlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.history-item-time {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.history-item-worry {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  background: rgba(139, 115, 85, 0.06);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.history-item-praise {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(139, 115, 85, 0.12);
+  flex-shrink: 0;
+}
+
+.clear-history-btn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(220, 80, 80, 0.08);
+  border: 1px solid rgba(220, 80, 80, 0.15);
+  border-radius: 10px;
+  color: rgba(200, 60, 60, 0.7);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-history-btn:hover {
+  background: rgba(220, 80, 80, 0.15);
+  color: rgba(180, 40, 40, 0.85);
+}
+
+/* 侧边栏切换按钮 */
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 1.3rem;
+  cursor: pointer;
+  z-index: 40;
+  box-shadow: none;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px;
+}
+
+.sidebar-toggle-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 248, 231, 0.4);
+}
+
+.history-sidebar.open ~ .sidebar-toggle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== 烦恼输入区 — 底部固定折叠式 ===== */
+
+/* 底部 Dock 容器 — 居中圆角卡片 */
+.shredder-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 480px;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 159, 67, 0.2);
+  box-shadow: 0 8px 32px rgba(255, 159, 67, 0.18);
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 折叠触发条 */
+.shredder-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease;
+}
+
+.shredder-trigger:hover {
+  background: rgba(255, 159, 67, 0.08);
+}
+
+.shredder-trigger-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.shredder-trigger-text {
+  flex: 1;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shredder-trigger-arrow {
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  transition: transform 0.35s ease;
+  flex-shrink: 0;
+}
+
+/* 展开状态时箭头旋转 */
+.shredder-dock.open .shredder-trigger-arrow {
+  transform: rotate(180deg);
+}
+
+/* 输入面板 — 默认隐藏 */
+.shredder-panel {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  opacity: 0;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              padding 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.25s ease;
+}
+
+/* 展开状态 */
+.shredder-dock.open .shredder-panel {
+  max-height: 300px;
+  padding: 0 20px 18px;
+  opacity: 1;
+}
+
+/* 输入框 — 跟之前类似 */
+.shredder-card,
+.shredder-input-wrapper {
+  position: relative;
+}
+
+#worry-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+#worry-input::placeholder {
+  color: var(--color-text-light);
+}
+
+#worry-input:focus {
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 0 4px rgba(255, 159, 67, 0.12);
+}
+
+.char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+/* 粉碎按钮 */
+.shred-button {
+  display: block;
+  width: 100%;
+  padding: 10px 36px;
+  font-family: var(--font-cute);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-accent) 0%, #FF7B54 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 16px rgba(255, 123, 84, 0.35);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.shred-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(255, 123, 84, 0.45);
+  background: linear-gradient(135deg, var(--color-accent-hover) 0%, #FF9470 100%);
+}
+
+.shred-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.shred-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  :root { --usagi-size: 110px; }
+  #app { padding: 16px 12px 32px; }
+  .title-en { font-size: 3rem; }
+  .title-cn { font-size: 1rem; }
+  .shredder-dock { bottom: 12px; width: 94%; }
+  .shredder-trigger { padding: 12px 16px; }
+  .shredder-panel { padding-left: 16px; padding-right: 16px; }
+  .shredder-dock.open .shredder-panel { padding: 0 16px 14px; }
+}

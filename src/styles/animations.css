@@ -1,0 +1,239 @@
+/* ===== v4 动画与样式 ===== */
+
+/* ---- 旧版保留（兼容） ---- */
+
+/* 乌萨奇 idle 浮动 */
+@keyframes usagi-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.usagi-idle-anim {
+  animation: usagi-idle 2.5s ease-in-out infinite;
+}
+
+/* 乌萨奇跳跃（点击时）— 旧版兼容，v4已用GSAP替代 */
+@keyframes usagi-jump {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-30px) scale(1.08); }
+  50% { transform: translateY(-40px) scale(1.05); }
+  70% { transform: translateY(-15px) scale(1.02); }
+  85% { transform: translateY(-5px) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.usagi-jump-anim {
+  animation: usagi-jump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* 乌萨奇吃掉动作 — 旧版兼容 */
+@keyframes usagi-eat {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.12) rotate(-5deg); }
+  50% { transform: scale(0.95) rotate(5deg); }
+  75% { transform: scale(1.06) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.usagi-eat-anim {
+  animation: usagi-eat 0.5s ease-in-out;
+}
+
+/* 能量波扩散 */
+@keyframes energy-wave-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+.energy-wave-ring {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--color-gold);
+  pointer-events: none;
+  animation: energy-wave-expand 1.2s ease-out forwards;
+}
+
+/* 打字机光标闪烁 */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor::after {
+  content: '▌';
+  color: var(--color-accent);
+  animation: blink-cursor 0.6s step-end infinite;
+  margin-left: 2px;
+}
+
+/* 按钮脉冲提示 */
+@keyframes btn-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(255, 123, 84, 0.35); }
+  50% { box-shadow: 0 4px 24px rgba(255, 123, 84, 0.55), 0 0 0 4px rgba(255, 159, 67, 0.15); }
+}
+
+.shred-button:not(:disabled).ready {
+  animation: btn-pulse 2s ease-in-out infinite;
+}
+
+/* 乌萨奇走路摇摆 — 保留但v4行为引擎自己管理帧切换 */
+@keyframes usagi-walk-wobble {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(-2deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-4px) rotate(2deg); }
+}
+
+.usagi-walking .usagi-sprite-wrapper {
+  animation: usagi-walk-wobble 0.35s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   v4 新增样式
+   ============================================================ */
+
+/* ---- 方向翻转（v4增强：与Rail锚点共存）---- */
+.usagi-facing-left #usagi-sprite {
+  /* 由JS动态控制transform，CSS不再硬编码 */
+}
+.usagi-facing-right #usagi-sprite {
+  /* 同上 */
+}
+
+/* ---- Rail 锚点系统 ---- */
+.usagi-on-floor #usagi-character {
+  /* 地板模式：正常定位 */
+}
+
+.usagi-on-ceiling {
+  /* 天花板倒挂模式 */
+  transform-origin: center bottom;
+}
+
+.usagi-on-ceiling #usagi-sprite {
+  /* 倒挂翻转由JS控制: rotate(180deg) */
+  filter: drop-shadow(0 -4px 12px rgba(255, 159, 67, 0.25));
+}
+
+.usagi-in-midair {
+  /* 中间层：轻微阴影加深表示悬空 */
+}
+.usagi-in-midair #usagi-sprite {
+  filter: drop-shadow(0 6px 16px rgba(255, 159, 67, 0.3));
+}
+
+
+/* ---- HA! 反应特效 ---- */
+
+/* HA! 弹性膨胀 — 配合GSAP使用 */
+.usagi-ha-burst {
+  animation: ha-burst 0.4s ease-out;
+}
+
+@keyframes ha-burst {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.2); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* 屏幕震动（HA!连击第2次+）*/
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4px, 3px); }
+  20% { transform: translate(4px, -3px); }
+  30% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  50% { transform: translate(-2px, 1px); }
+  60% { transform: translate(2px, -1px); }
+}
+
+.usagi-screen-shake {
+  animation: screen-shake 0.35s ease-out;
+}
+
+
+/* ---- 扭屁股 wiggle 动画（吃烦恼/连击/打发时间）---- */
+@keyframes usagi-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(6deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(3deg); }
+}
+
+.usagi-wiggle-anim .usagi-sprite-wrapper {
+  animation: usagi-wiggle 0.15s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+
+/* ---- 攀爬抖动效果 ---- */
+@keyframes climb-twitch {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(2px); }
+  75% { transform: translateY(-2px); }
+}
+
+.usagi-climbing #usagi-sprite {
+  animation: climb-twitch 0.12s step-end infinite;
+}
+
+
+/* ---- 受惊掉落 ---- */
+@keyframes startle-fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(10px) rotate(-10deg); }
+  60% { transform: translateY(30px) rotate(5deg); }
+  100% { transform: translateY(50px) rotate(-3deg); }
+}
+
+
+/* ---- 气泡通用样式 ---- */
+.usagi-speech-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.95);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #FF6B81;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 气泡小三角 */
+.usagi-speech-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top-color: rgba(255,255,255,0.95);
+}
+
+
+/* ---- 落地弹跳 Bouncing 帧闪烁感 ---- */
+@keyframes bounce-glitch {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.85; filter: brightness(1.2); }
+}
+
+.usagi-bouncing #usagi-sprite {
+  animation: bounce-glitch 0.08s step-end 3;
+}
