@@ -8,7 +8,7 @@ import { UsagiCharacter } from './modules/usagi-character.js';
 import { Shredder } from './modules/shredder.js';
 import { PraiseBubble } from './modules/praise-bubble.js';
 import { EnergyWave } from './modules/energy-wave.js';
-import { getUsagiReply, resetConversation } from './modules/usagi-api.js';
+import { getUsagiReply, resetConversation, getMode, setMode } from './modules/usagi-api.js';
 
 // ===== 初始化顺序 =====
 
@@ -245,3 +245,61 @@ document.addEventListener('click', function(e) {
 
 // 初始加载历史
 renderHistory();
+
+// ===== 设置面板：对话模式切换 =====
+
+var settingsToggle = document.getElementById('settings-toggle');
+var settingsPanel = document.getElementById('settings-panel');
+var settingsClose = document.getElementById('settings-close');
+var modeQuickBtn = document.getElementById('mode-quick');
+var modeBotBtn = document.getElementById('mode-bot');
+
+// 初始化按钮状态
+function updateModeUI() {
+  var mode = getMode();
+  if (modeQuickBtn) modeQuickBtn.classList.toggle('active', mode === 'quick');
+  if (modeBotBtn) modeBotBtn.classList.toggle('active', mode === 'bot');
+}
+
+// 设置面板开关
+if (settingsToggle && settingsPanel) {
+  settingsToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    settingsPanel.classList.toggle('open');
+    updateModeUI();
+  });
+}
+
+if (settingsClose && settingsPanel) {
+  settingsClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    settingsPanel.classList.remove('open');
+  });
+}
+
+// 点击面板外部关闭
+document.addEventListener('click', function(e) {
+  if (settingsPanel && settingsPanel.classList.contains('open')) {
+    if (!settingsPanel.contains(e.target) && e.target !== settingsToggle) {
+      settingsPanel.classList.remove('open');
+    }
+  }
+});
+
+// 模式切换
+if (modeQuickBtn) {
+  modeQuickBtn.addEventListener('click', function() {
+    setMode('quick');
+    updateModeUI();
+  });
+}
+
+if (modeBotBtn) {
+  modeBotBtn.addEventListener('click', function() {
+    setMode('bot');
+    updateModeUI();
+  });
+}
+
+// 初始化
+updateModeUI();

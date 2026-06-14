@@ -40,6 +40,33 @@
       <button id="clear-history" class="clear-history-btn">🗑️ 清空记录</button>
     </div>
   </div>
+  <!-- 左上角设置按钮 -->
+  <button id="settings-toggle" class="settings-toggle" title="设置">⚙️</button>
+
+  <!-- 设置面板 -->
+  <div id="settings-panel" class="settings-panel">
+    <div class="settings-panel-header">
+      <span>⚙️ 对话模式</span>
+      <button id="settings-close" class="settings-close">✕</button>
+    </div>
+    <div class="settings-options">
+      <button id="mode-quick" class="mode-option active" data-mode="quick">
+        <span class="mode-icon">⚡</span>
+        <span class="mode-info">
+          <span class="mode-name">快速问答</span>
+          <span class="mode-desc">无记忆，响应更快</span>
+        </span>
+      </button>
+      <button id="mode-bot" class="mode-option" data-mode="bot">
+        <span class="mode-icon">🤖</span>
+        <span class="mode-info">
+          <span class="mode-name">智能体</span>
+          <span class="mode-desc">有记忆，回答较慢</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
   <!-- 侧边栏切换按钮 -->
   <button id="sidebar-toggle" class="sidebar-toggle">📜<span class="sidebar-toggle-text">聊天记录</span></button>
 

@@ -7,7 +7,14 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
-      // 将 /api/coze 代理到 Coze API，解决浏览器 CORS 限制
+      // 快速问答模式：ECNU OpenAI 兼容接口
+      '/api/chat': {
+        target: 'https://chat.ecnu.edu.cn/open/api/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/chat/, ''),
+        secure: true,
+      },
+      // 智能体模式：Coze Bot API
       '/api/coze': {
         target: 'https://api.coze.cn',
         changeOrigin: true,
