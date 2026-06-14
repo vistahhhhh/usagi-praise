@@ -26,18 +26,42 @@ const praiseBubble = new PraiseBubble('praise-container', (praiseType) => {
   energyWave.emitAtUsagi(usagi, praiseType);
 });
 
-// 4.5 让夸夸容器跟随乌萨奇位置
+// 4.5 让夸夸容器持续跟随乌萨奇位置
 var praiseContainer = document.getElementById('praise-container');
+var _praiseFollowRaf = null;
+
 function syncPraiseContainer() {
   var pos = usagi.getPosition();
   if (praiseContainer && pos) {
-    // 用 bottom 定位：底边固定在乌萨奇耳朵上方，文字多时向上扩展
     var usagiTop = pos.y - pos.height / 2;
-    var gap = 50; // 气泡底边距离乌萨奇头顶的间距
+    var gap = 50;
     praiseContainer.style.position = 'absolute';
-    praiseContainer.style.left = (pos.x - 150) + 'px';
-    praiseContainer.style.top = '';
-    praiseContainer.style.bottom = (window.innerHeight - usagiTop + gap) + 'px';
+    praiseContainer.style.left = (pos.x - 170) + 'px';
+    praiseContainer.style.top = (usagiTop - gap) + 'px';
+    praiseContainer.style.bottom = '';
+  }
+}
+
+/** 启动气泡跟随循环（气泡出现时调用） */
+function startPraiseFollow() {
+  if (_praiseFollowRaf) return; // 已在运行
+  function loop() {
+    syncPraiseContainer();
+    // 检查气泡是否还在（不在就停循环）
+    if (praiseContainer && praiseContainer.querySelector('.praise-bubble')) {
+      _praiseFollowRaf = requestAnimationFrame(loop);
+    } else {
+      _praiseFollowRaf = null;
+    }
+  }
+  _praiseFollowRaf = requestAnimationFrame(loop);
+}
+
+/** 停止气泡跟随循环 */
+function stopPraiseFollow() {
+  if (_praiseFollowRaf) {
+    cancelAnimationFrame(_praiseFollowRaf);
+    _praiseFollowRaf = null;
   }
 }
 
@@ -49,6 +73,7 @@ const shredder = new Shredder({
     // 这里在吃烦恼动画完成后：显示气泡 + 异步获取API回复
     setTimeout(function() {
       syncPraiseContainer();
+      startPraiseFollow();
 
       // ★ 调用真实 API 获取乌萨奇回复
       var replyPromise = getUsagiReply(originalText);
@@ -71,6 +96,7 @@ const shredder = new Shredder({
 document.addEventListener('usagiEatComplete', function(e) {
   console.log('[Main] Received usagiEatComplete event, showing praise bubble');
   syncPraiseContainer();
+  startPraiseFollow();
 
   var worryText = (e.detail && e.detail.worry) ? e.detail.worry : '';
   if (worryText) {
