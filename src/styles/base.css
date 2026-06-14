@@ -445,11 +445,6 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 159, 67, 0.15);
 }
 
-.mode-icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
 .mode-info {
   display: flex;
   flex-direction: column;
