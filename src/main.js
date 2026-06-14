@@ -8,7 +8,7 @@ import { UsagiCharacter } from './modules/usagi-character.js';
 import { Shredder } from './modules/shredder.js';
 import { PraiseBubble } from './modules/praise-bubble.js';
 import { EnergyWave } from './modules/energy-wave.js';
-import { getUsagiReply } from './modules/usagi-api.js';
+import { getUsagiReply, resetConversation } from './modules/usagi-api.js';
 
 // ===== 初始化顺序 =====
 
@@ -220,6 +220,16 @@ if (clearHistoryBtn) {
     if (confirm('确定清空所有历史记录吗？')) {
       localStorage.removeItem(HISTORY_KEY);
       renderHistory();
+    }
+  });
+}
+
+// 重新开始（清除对话记忆）
+var resetConversationBtn = document.getElementById('reset-conversation');
+if (resetConversationBtn) {
+  resetConversationBtn.addEventListener('click', function() {
+    if (confirm('确定让乌萨奇忘记之前的对话吗？\n下次聊天将从零开始～')) {
+      resetConversation();
     }
   });
 }
