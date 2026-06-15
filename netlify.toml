@@ -2,14 +2,16 @@
   command = "npm run build"
   publish = "dist"
 
-[[redirects]]
-  from = "/api/chat/*"
-  to = "https://chat.ecnu.edu.cn/open/api/v1/:splat"
-  status = 200
-  force = true
+[functions]
+  directory = "netlify/functions"
 
+# ECNU 快速问答：Netlify Function 路由
 [[redirects]]
-  from = "/api/coze/*"
-  to = "https://api.coze.cn/:splat"
+  from = "/api/ecnu-chat"
+  to = "/.netlify/functions/ecnu-chat"
   status = 200
-  force = true
+
+# Coze 智能体：Netlify Edge Function 路由
+[[edge_functions]]
+  path = "/api/coze-chat"
+  function = "coze-chat"

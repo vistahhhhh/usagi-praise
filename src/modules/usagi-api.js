@@ -1,24 +1,23 @@
 /**
- * usagi-api.js — 双模式 API 调用
+ * usagi-api.js — 双模式 API 调用（Serverless 安全版）
  *
  * 模式 1：快速问答（默认）— ECNU OpenAI 兼容接口，无记忆，响应快
  * 模式 2：智能体模式 — Coze Bot v3/chat stream，有记忆，回答较慢
  *
- * 开发环境：走 Vite 代理 → 避免 CORS
- * 生产环境：走 Vercel rewrites → 同样避免 CORS
+ * 安全架构：前端不带 API Key，由 Serverless Function 注入
+ * - 开发环境：Vite 中间件读取 .env 注入 Key
+ * - 生产环境：Vercel/Netlify Function 从平台环境变量读取 Key
  */
 
 import { USAGI_SYSTEM_PROMPT } from '../data/usagi-system-prompt.js';
 
 // ===== 快速问答模式配置 (ECNU OpenAI) =====
-const QUICK_API_KEY = import.meta.env.VITE_API_KEY || '';
 const QUICK_API_MODEL = import.meta.env.VITE_API_MODEL || 'ecnu-max';
-const QUICK_ENDPOINT = '/api/chat/chat/completions';
+const QUICK_ENDPOINT = '/api/ecnu-chat';
 
 // ===== 智能体模式配置 (Coze Bot) =====
-const COZE_API_TOKEN = import.meta.env.VITE_COZE_API_TOKEN || '';
 const COZE_BOT_ID = import.meta.env.VITE_COZE_BOT_ID || '7651237086146183209';
-const COZE_ENDPOINT = '/api/coze/v3/chat';
+const COZE_ENDPOINT = '/api/coze-chat';
 
 const FALLBACK_REPLY = '噗噜噜…乌萨奇吃掉了烦恼！呀哈！你超棒的，继续加油！';
 
@@ -98,17 +97,12 @@ export async function getUsagiReply(worryText) {
 // ===== 快速问答模式 (ECNU OpenAI) =====
 
 async function getUsagiReplyQuick(worryText) {
-  if (!QUICK_API_KEY) {
-    console.warn('[UsagiAPI/Quick] Missing API key, falling back');
-    return FALLBACK_REPLY;
-  }
-
   try {
+    // 前端不带 Authorization，Key 由 Serverless Function 注入
     const response = await fetch(QUICK_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + QUICK_API_KEY,
       },
       body: JSON.stringify({
         model: QUICK_API_MODEL,
@@ -145,11 +139,6 @@ async function getUsagiReplyQuick(worryText) {
 // ===== 智能体模式 (Coze Bot v3/chat stream) =====
 
 async function getUsagiReplyBot(worryText) {
-  if (!COZE_API_TOKEN) {
-    console.warn('[UsagiAPI/Bot] Missing Coze API token, falling back');
-    return FALLBACK_REPLY;
-  }
-
   var conversationId = getConversationId();
 
   try {
@@ -174,11 +163,11 @@ async function getUsagiReplyBot(worryText) {
       console.log('[UsagiAPI/Bot] 新对话（无历史记忆）');
     }
 
+    // 前端不带 Authorization，Token 由 Serverless Function 注入
     const response = await fetch(COZE_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + COZE_API_TOKEN,
       },
       body: JSON.stringify(requestBody),
     });
